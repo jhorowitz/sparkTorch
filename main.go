@@ -10,6 +10,8 @@ import (
 
 	"html/template"
 
+	"flag"
+
 	"github.com/Sirupsen/logrus"
 )
 
@@ -19,13 +21,18 @@ func init() {
 }
 
 var (
-	siteLocation     = os.Getenv("SITE_LOCATION")
-	bindAddress      = os.Getenv("BIND_ADDR")
-	sparkId          = os.Getenv("SPARK_ID")
-	sparkAccessToken = os.Getenv("SPARK_ACCESS_TOKEN")
+	siteLocation     string
+	bindAddress      string
+	sparkId          string
+	sparkAccessToken string
 )
 
 func init() {
+	flag.StringVar(&siteLocation, "site-location", os.Getenv("SITE_LOCATION"), "site entry point")
+	flag.StringVar(&bindAddress, "bind-addr", os.Getenv("BIND_ADDR"), "bind address")
+	flag.StringVar(&sparkId, "spark-id", os.Getenv("SPARK_ID"), "spark id")
+	flag.StringVar(&sparkAccessToken, "spark-access-token", os.Getenv("SPARK_ACCESS_TOKEN"), "spark access token")
+	flag.Parse()
 	if len(siteLocation) == 0 {
 		siteLocation = "./site.html"
 	}
