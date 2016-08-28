@@ -8,8 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Sirupsen/logrus"
 	"html/template"
+
+	"github.com/Sirupsen/logrus"
 )
 
 func init() {
@@ -18,16 +19,24 @@ func init() {
 }
 
 var (
-	siteLocation = os.Getenv("SITE_LOCATION")
-	bindAddress = os.Getenv("BIND_ADDR")
-	sparkId = os.Getenv("SPARK_ID")
+	siteLocation     = os.Getenv("SITE_LOCATION")
+	bindAddress      = os.Getenv("BIND_ADDR")
+	sparkId          = os.Getenv("SPARK_ID")
 	sparkAccessToken = os.Getenv("SPARK_ACCESS_TOKEN")
 )
 
-func init () {
+func init() {
 	if len(siteLocation) == 0 {
 		siteLocation = "./site.html"
 	}
+}
+
+func main() {
+	http.HandleFunc("/", handleMessaging)
+
+	logrus.WithField("address", bindAddress).Debug("HTTP Server bind started.")
+	fatalErr := http.ListenAndServe(bindAddress, nil)
+	logrus.WithError(fatalErr).Fatal("Server unexpectedly shut down.")
 }
 
 func handleMessaging(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +62,7 @@ func handleMessaging(w http.ResponseWriter, r *http.Request) {
 		err := SendRequest(message)
 		if err != nil {
 			logrus.WithError(err).Error("Message send failed.")
-			http.Error(w, "Message send failed: " + err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Message send failed: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -64,14 +73,6 @@ func handleMessaging(w http.ResponseWriter, r *http.Request) {
 		}
 		t.Execute(w, nil)
 	}
-}
-
-func main() {
-	http.HandleFunc("/", handleMessaging)
-
-	logrus.WithField("address", bindAddress).Debug("HTTP Server bind started.")
-	fatalErr := http.ListenAndServe(bindAddress, nil)
-	logrus.WithError(fatalErr).Fatal("Server unexpectedly shut down.")
 }
 
 func SendRequest(message string) error {
