@@ -41,7 +41,7 @@ func init() {
 func main() {
 	http.HandleFunc("/", handleMessaging)
 
-	logrus.WithField("address", bindAddress).Debug("HTTP Server bind started.")
+	logrus.WithField("address", bindAddress).Debug("HTTP Server started.")
 	fatalErr := http.ListenAndServe(bindAddress, nil)
 	logrus.WithError(fatalErr).Fatal("Server unexpectedly shut down.")
 }
